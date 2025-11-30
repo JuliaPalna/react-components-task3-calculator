@@ -10,61 +10,74 @@ export const App = () => {
     const [result, setResult] = useState('');
     const [isFinalResult, setIsFinalResult] = useState(false);
 
+    const handleNumberClick = (number) => {
+        if (operator === '') {
+            setOperand1(operand1 + number);
+        } else {
+            setOperand2(operand2 + number);
+        }
+
+        if (isFinalResult) {
+            setIsFinalResult(false);
+        }
+    };
+
+    const handleOperatorResetClick = () => {
+        setOperand1('');
+        setOperand2('');
+        setOperator('');
+        setResult('');
+        setIsFinalResult(false);
+        return;
+    };
+
+    const handleOperatorEqualsClick = () => {
+        const newResult = calculate(
+            Number(operand1),
+            operator,
+            Number(operand2),
+        );
+
+        setResult(newResult);
+        setIsFinalResult(true);
+        return;
+    };
+
+    const handleOperatorMathClick = (mathOperator) => {
+        if (operand1 === '') {
+            return;
+        }
+
+        setOperator(mathOperator);
+
+        if (isFinalResult) {
+            setIsFinalResult(false);
+        }
+    };
+
     const handleClick = ({ target }) => {
         try {
             const currentButton = target.textContent;
-
             const isResetButton = currentButton === 'C';
             const isSubtractButton = currentButton === '-';
             const isAdditionButton = currentButton === '+';
             const isEqualsButton = currentButton === '=';
-            const isNumberButton =
-                typeof Number(currentButton) === 'number' &&
-                !isNaN(Number(currentButton));
+            const isNumberButton = !isNaN(Number(currentButton));
+
+            if (isNumberButton) {
+                handleNumberClick(currentButton);
+            }
 
             if (isResetButton) {
-                setOperand1('');
-                setOperand2('');
-                setOperator('');
-                setResult('');
-                setIsFinalResult(false);
-                return;
+                handleOperatorResetClick();
             }
 
             if (isEqualsButton) {
-                const newResult = calculate(
-                    Number(operand1),
-                    operator,
-                    Number(operand2),
-                );
-
-                setResult(newResult);
-                setIsFinalResult(true);
-                return;
-            }
-
-            if (isNumberButton) {
-                if (operator === '') {
-                    setOperand1(operand1 + currentButton);
-                } else {
-                    setOperand2(operand2 + currentButton);
-                }
-
-                if (isFinalResult) {
-                    setIsFinalResult(false);
-                }
+                handleOperatorEqualsClick();
             }
 
             if (isSubtractButton || isAdditionButton) {
-                if (operand1 === '') {
-                    return;
-                }
-
-                setOperator(currentButton);
-
-                if (isFinalResult) {
-                    setIsFinalResult(false);
-                }
+                handleOperatorMathClick(currentButton);
             }
         } catch (error) {
             console.error(error.message);
